@@ -327,7 +327,9 @@ export default function ModalScreen() {
           <SafeAreaView style={styles.modalOverlay} edges={['top', 'bottom']}>
             <View style={styles.modalContent}>
               <View style={styles.alertHeader}>
-                <ThemedText style={styles.alertIcon}>⚠️</ThemedText>
+                <View style={styles.iconContainer}>
+                  <ThemedText style={styles.alertIcon}>⚠️</ThemedText>
+                </View>
                 <ThemedText type="title" style={styles.alertTitle}>
                   PLACA ENCONTRADA!
                 </ThemedText>
@@ -487,9 +489,17 @@ const styles = StyleSheet.create({
     borderBottomWidth: 2,
     borderBottomColor: '#FF3B30',
   },
+  iconContainer: {
+    height: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
   alertIcon: {
     fontSize: 48,
-    marginBottom: 8,
+    lineHeight: 56,
+    textAlign: 'center',
+    includeFontPadding: false,
   },
   alertTitle: {
     color: '#FF3B30',
