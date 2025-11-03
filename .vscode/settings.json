@@ -3,5 +3,7 @@
     "source.fixAll": "explicit",
     "source.organizeImports": "explicit",
     "source.sortMembers": "explicit"
-  }
+  },
+  "kiro.steering.defaultDirectory": "documentacao_ia",
+  "kiro.spec.defaultDirectory": "documentacao_ia"
 }
