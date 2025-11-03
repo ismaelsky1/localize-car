@@ -1,27 +1,28 @@
-import { useRouter } from 'expo-router';
-import React, { useEffect, useRef, useState } from 'react';
-import {
-  Alert,
-  Modal,
-  Platform,
-  Pressable,
-  StyleSheet,
-  TouchableOpacity,
-  useWindowDimensions,
-  View,
-} from 'react-native';
-import MlkitOcr from 'react-native-mlkit-ocr';
-import { Camera, useCameraDevice, useCameraPermission } from 'react-native-vision-camera';
-
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { CarRegistry } from '@/lib/supabase';
 import carService from '@/services/carService';
 import ocrService from '@/services/ocrService';
 import PlateValidator from '@/utils/plateValidator';
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { Canvas, RoundedRect } from '@shopify/react-native-skia';
+import { useRouter } from 'expo-router';
+import React, { useEffect, useRef, useState } from 'react';
+import {
+  Alert,
+  Linking,
+  Modal,
+  Platform,
+  Pressable,
+  StyleSheet,
+  TouchableOpacity,
+  useWindowDimensions,
+  View
+} from 'react-native';
+import MlkitOcr from 'react-native-mlkit-ocr';
 import { useSharedValue, withTiming } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Camera, useCameraDevice, useCameraPermission } from 'react-native-vision-camera';
 
 interface DetectedPlate {
   text: string;
@@ -328,10 +329,10 @@ export default function ModalScreen() {
             <View style={styles.modalContent}>
               <View style={styles.alertHeader}>
                 <View style={styles.iconContainer}>
-                  <ThemedText style={styles.alertIcon}>⚠️</ThemedText>
+                  <FontAwesome6 name="triangle-exclamation" size={48} color="#FF3B30" />
                 </View>
                 <ThemedText type="title" style={styles.alertTitle}>
-                  PLACA ENCONTRADA!
+                  Veículo encontrado!
                 </ThemedText>
               </View>
 
@@ -380,6 +381,25 @@ export default function ModalScreen() {
                     </View>
                   )}
                 </View>
+              )}
+
+              {foundCar?.contact_phone && (
+                <Pressable
+                  style={styles.whatsappButton}
+                  onPress={() => {
+                    if (!foundCar?.contact_phone) return;
+                    const phone = foundCar.contact_phone.replace(/\D/g, '');
+                    const fullPhone = phone.startsWith('55') ? phone : `55${phone}`;
+                    const message = `Olá! Seu carro *Placa ${foundCar.plate}* foi localizado.`;
+                    const url = `https://wa.me/${fullPhone}?text=${encodeURIComponent(message)}`;
+                    Linking.openURL(url).catch(() => {
+                      Alert.alert('Erro', 'Não foi possível abrir o WhatsApp');
+                    });
+                  }}
+                >
+                  <FontAwesome6 name="whatsapp" size={20} color="#FFFFFF" style={{ marginRight: 8 }} />
+                  <ThemedText style={styles.whatsappButtonText}>Notificar</ThemedText>
+                </Pressable>
               )}
 
               <Pressable
@@ -475,7 +495,7 @@ const styles = StyleSheet.create({
     padding: 24,
     width: '90%',
     maxWidth: 400,
-    maxHeight: '80%',
+    maxHeight: '95%',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
@@ -494,12 +514,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 8,
-  },
-  alertIcon: {
-    fontSize: 48,
-    lineHeight: 56,
-    textAlign: 'center',
-    includeFontPadding: false,
   },
   alertTitle: {
     color: '#FF3B30',
@@ -552,14 +566,34 @@ const styles = StyleSheet.create({
     marginTop: 4,
     lineHeight: 20,
   },
-  closeModalButton: {
-    backgroundColor: '#007AFF',
+  whatsappButton: {
+    backgroundColor: '#25D366',
     padding: 16,
     borderRadius: 12,
     alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginHorizontal: 24,
+    marginTop: 20,
+    marginBottom: 12,
+  },
+  whatsappButtonText: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  closeModalButton: {
+    backgroundColor: 'transparent',
+    padding: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#007AFF',
+    marginHorizontal: 24,
+    marginBottom: 24,
   },
   closeModalButtonText: {
-    color: '#FFFFFF',
+    color: '#007AFF',
     fontSize: 18,
     fontWeight: '600',
   },
